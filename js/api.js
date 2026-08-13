@@ -1,10 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const worryForm = document.getElementById('worry-form');
+    const worryForm  = document.getElementById('worry-form');
     const resultArea = document.getElementById('result-area');
-    const loadingUI = document.getElementById('loading');
+    const loadingUI  = document.getElementById('loading');
     const quoteResult = document.getElementById('quote-result');
-    const quoteText = document.getElementById('quote-text');
-    const submitBtn = worryForm ? worryForm.querySelector('button[type="submit"]') : null;
+    const quoteText  = document.getElementById('quote-text');
+    const submitBtn  = worryForm ? worryForm.querySelector('button[type="submit"]') : null;
+    const saveBtn    = document.getElementById('save-btn');
+    const saveToast  = document.getElementById('save-toast');
+
+    // 저장 버튼이 눌릴 때 사용할 현재 처방전 데이터 (클로저 변수)
+    let _currentCategory = '';
+    let _currentWorry    = '';
+    let _currentQuote    = '';
+
+    // 저장 버튼 이벤트
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            if (!_currentQuote) return;
+            window.ParadoxMind.Archive.save(_currentCategory, _currentWorry, _currentQuote);
+
+            // 저장 완료 토스트 표시 후 버튼 비활성화 (중복 방지)
+            saveBtn.disabled = true;
+            saveBtn.textContent = '✅ 저장됨';
+            if (saveToast) {
+                saveToast.classList.remove('hidden');
+                setTimeout(() => saveToast.classList.add('hidden'), 3000);
+            }
+        });
+    }
 
     if (worryForm) {
         worryForm.addEventListener('submit', async (e) => {
@@ -47,10 +70,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const data = await response.json();
                 
+                // 현재 처방전 데이터 기록
+                _currentCategory = category;
+                _currentWorry    = text;
+                _currentQuote    = data.quote;
+
                 // [정상 동작] DOM 렌더링
                 loadingUI.classList.add('hidden');
                 quoteResult.classList.remove('hidden');
                 quoteText.innerHTML = data.quote.replace(/\n/g, '<br>');
+
+                // 저장 버튼 초기화 (새 처방전 생성 시 재활성화)
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = '💾 처방전 저장';
+                }
+                if (saveToast) saveToast.classList.add('hidden');
                 
             } catch (error) {
                 loadingUI.classList.add('hidden');

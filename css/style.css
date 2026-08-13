@@ -275,8 +275,261 @@ footer {
         flex-direction: column;
         gap: 15px;
     }
-    
+
     .wavy-text {
         font-size: 1.8rem;
     }
+
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .archive-actions {
+        flex-direction: column;
+    }
+
+    .result-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* ===== 결과 버튼 그룹 ===== */
+.result-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* 저장 버튼 */
+.save-btn {
+    background-color: #a8e6cf;
+    border-color: var(--border-color);
+}
+.save-btn:hover {
+    background-color: #88d8b0;
+}
+.save-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    animation: none;
+}
+
+/* 저장 성공 토스트 */
+.save-toast {
+    margin-top: 12px;
+    padding: 10px 16px;
+    background-color: #d4edda;
+    border: 2px solid #28a745;
+    border-radius: 4px;
+    color: #155724;
+    font-size: 0.95rem;
+    animation: fadeInDown 0.3s ease;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== 네비게이션 배지 ===== */
+.nav-badge {
+    display: inline-block;
+    background-color: #ff6b6b;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 1px 6px;
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+    min-width: 20px;
+    text-align: center;
+    transition: transform 0.2s;
+}
+.nav-badge[data-count="0"] {
+    background-color: #aaa;
+}
+
+/* ===== 처방전 보관함 섹션 ===== */
+.bg-archive {
+    background-color: #fef9e7; /* 따뜻한 크림 노랑 */
+}
+
+.archive-total-badge {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: white;
+    font-size: 1rem;
+    padding: 2px 10px;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.archive-empty-msg {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888;
+    font-size: 1.1rem;
+    border: 3px dashed #ccc;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.archive-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.archive-item {
+    background-color: white;
+    border: 3px solid var(--border-color);
+    border-radius: 6px;
+    padding: 16px 20px;
+    text-align: left;
+    position: relative;
+    margin-top: 0;
+    box-shadow: 4px 4px 0px var(--border-color);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.archive-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.archive-category {
+    font-weight: bold;
+    font-size: 0.9rem;
+    background-color: var(--accent-yellow);
+    padding: 3px 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.archive-date {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.archive-worry {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 8px;
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #aaa;
+}
+
+.archive-quote {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--text-color);
+    padding: 10px;
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    margin-bottom: 12px;
+    line-height: 1.7;
+}
+
+.archive-item-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* ===== 하단 액션 버튼 영역 ===== */
+.archive-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+/* 디스코드 전송 버튼 */
+.discord-btn {
+    background-color: #7289da;
+    color: white;
+    border-color: #5b73c7;
+    box-shadow: 4px 4px 0px #5b73c7;
+}
+.discord-btn:hover:not(:disabled) {
+    background-color: #5b73c7;
+}
+.discord-btn:active:not(:disabled) {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px #5b73c7;
+}
+.discord-btn:disabled {
+    background-color: #b2bfef;
+    border-color: #aaa;
+    box-shadow: 4px 4px 0px #aaa;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* 위험(삭제) 버튼 */
+.danger-btn {
+    background-color: #fadbd8;
+    border-color: #e74c3c;
+    box-shadow: 4px 4px 0px #e74c3c;
+    color: #c0392b;
+}
+.danger-btn:hover:not(:disabled) {
+    background-color: #f1948a;
+    color: white;
+}
+.danger-btn:active:not(:disabled) {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px #e74c3c;
+}
+.danger-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* small 삭제 버튼 */
+.small-btn {
+    font-size: 0.9rem;
+    padding: 6px 14px;
+}
+
+/* 디스코드 전송 결과 메시지 */
+.discord-status-msg {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 1rem;
+    border: 2px solid;
+    animation: fadeInDown 0.3s ease;
+}
+.discord-status-msg.success {
+    background-color: #d4edda;
+    border-color: #28a745;
+    color: #155724;
+}
+.discord-status-msg.error {
+    background-color: #f8d7da;
+    border-color: #dc3545;
+    color: #721c24;
+}
+.discord-status-msg.sending {
+    background-color: #cce5ff;
+    border-color: #004085;
+    color: #004085;
 }
