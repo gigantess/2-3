@@ -478,6 +478,12 @@ footer {
     gap: 6px;
 }
 
+.archive-badge-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .archive-category {
     font-weight: bold;
     font-size: 0.9rem;
@@ -485,6 +491,26 @@ footer {
     padding: 3px 10px;
     border: 2px solid var(--border-color);
     border-radius: 4px;
+}
+
+.archive-sent-tag {
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+}
+
+.archive-sent-tag.sent {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.archive-sent-tag.unsent {
+    background-color: #fff3cd;
+    color: #856404;
+    border-color: #ffeeba;
 }
 
 .archive-date {

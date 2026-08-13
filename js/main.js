@@ -24,12 +24,26 @@ const Archive = {
             date: new Date().toLocaleString('ko-KR', {
                 year: 'numeric', month: '2-digit', day: '2-digit',
                 hour: '2-digit', minute: '2-digit'
-            })
+            }),
+            sent: false                   // 디스코드 전송 여부 플래그
         };
         items.unshift(item);               // 최신 항목을 맨 앞에
         localStorage.setItem(ARCHIVE_KEY, JSON.stringify(items.slice(0, 50))); // 최대 50개
         this.render();
         return item;
+    },
+
+    /** 특정 ID 목록을 디스코드 전송 완료 상태로 변경 */
+    markAsSent(sentIds) {
+        const idSet = new Set(sentIds);
+        const items = this.getAll().map(item => {
+            if (idSet.has(item.id)) {
+                return { ...item, sent: true };
+            }
+            return item;
+        });
+        localStorage.setItem(ARCHIVE_KEY, JSON.stringify(items));
+        this.render();
     },
 
     /** 항목 개별 삭제 */
@@ -57,8 +71,10 @@ const Archive = {
 
         if (!list) return;
 
-        // 카운트 업데이트
+        // 카운트 및 미전송 개수 계산
         const count = items.length;
+        const unsentCount = items.filter(i => !i.sent).length;
+
         if (countEl)  countEl.textContent  = count;
         if (badgeEl) {
             const prev = parseInt(badgeEl.textContent || '0', 10);
@@ -75,8 +91,20 @@ const Archive = {
         // 빈 상태 / 있는 상태 토글
         const isEmpty = count === 0;
         if (emptyMsg) emptyMsg.classList.toggle('hidden', !isEmpty);
-        if (sendBtn)  sendBtn.disabled  = isEmpty;
         if (clearBtn) clearBtn.disabled = isEmpty;
+
+        if (sendBtn) {
+            if (isEmpty) {
+                sendBtn.disabled = true;
+                sendBtn.textContent = '📨 디스코드로 전송하기';
+            } else if (unsentCount === 0) {
+                sendBtn.disabled = true;
+                sendBtn.textContent = '✅ 디스코드 전송 완료';
+            } else {
+                sendBtn.disabled = false;
+                sendBtn.textContent = `📨 디스코드로 전송하기 (${unsentCount}개 새 처방전)`;
+            }
+        }
 
         if (isEmpty) {
             list.innerHTML = '';
@@ -91,9 +119,14 @@ const Archive = {
         };
 
         list.innerHTML = items.map(item => `
-            <div class="archive-item" data-id="${item.id}">
+            <div class="archive-item ${item.sent ? 'is-sent' : ''}" data-id="${item.id}">
                 <div class="archive-header">
-                    <span class="archive-category">${CATEGORY_LABELS[item.category] || '기타'}</span>
+                    <div class="archive-badge-group">
+                        <span class="archive-category">${CATEGORY_LABELS[item.category] || '기타'}</span>
+                        <span class="archive-sent-tag ${item.sent ? 'sent' : 'unsent'}">
+                            ${item.sent ? '✅ 전송됨' : '🆕 미발송'}
+                        </span>
+                    </div>
                     <span class="archive-date">${item.date}</span>
                 </div>
                 <div class="archive-worry">😰 ${escapeHtml(item.worry)}</div>
@@ -139,15 +172,27 @@ function initDiscordSend() {
 
     if (sendBtn) {
         sendBtn.addEventListener('click', async () => {
-            const items = Archive.getAll();
-            if (items.length === 0) return;
+            const allItems = Archive.getAll();
+            const unsentItems = allItems.filter(item => !item.sent);
+
+            if (unsentItems.length === 0) {
+                if (statusDiv) {
+                    statusDiv.className = 'discord-status-msg success';
+                    statusDiv.textContent = 'ℹ️ 이미 모든 처방전이 디스코드로 전송되었습니다. 새로운 처방전을 저장해 보세요!';
+                    statusDiv.classList.remove('hidden');
+                    setTimeout(() => { if (statusDiv) statusDiv.classList.add('hidden'); }, 4000);
+                }
+                return;
+            }
+
+            const targetItems = unsentItems.slice(0, 10);
 
             // 전송 중 UI
             sendBtn.disabled = true;
             sendBtn.textContent = '📡 전송 중...';
             if (statusDiv) {
                 statusDiv.className = 'discord-status-msg sending';
-                statusDiv.textContent = '🔄 디스코드로 처방전을 보내고 있습니다...';
+                statusDiv.textContent = `🔄 ${targetItems.length}개의 새로운 처방전을 디스코드로 보내고 있습니다...`;
                 statusDiv.classList.remove('hidden');
             }
 
@@ -155,7 +200,7 @@ function initDiscordSend() {
                 const res = await fetch('/api/discord', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ items: items.slice(0, 10) }) // 최대 10개
+                    body: JSON.stringify({ items: targetItems }) // 미전송 항목만
                 });
 
                 const data = await res.json();
@@ -164,19 +209,21 @@ function initDiscordSend() {
                     throw new Error(data.error || `HTTP ${res.status}`);
                 }
 
+                // 성공 시 전송된 처방전들을 sent=true로 업데이트
+                Archive.markAsSent(targetItems.map(i => i.id));
+
                 if (statusDiv) {
                     statusDiv.className = 'discord-status-msg success';
-                    statusDiv.textContent = `✅ ${data.sent}개의 처방전을 디스코드로 전송했습니다! 채널을 확인해보세요 🎉`;
+                    statusDiv.textContent = `✅ ${data.sent}개의 새로운 처방전을 디스코드로 전송했습니다! 채널을 확인해보세요 🎉`;
                 }
             } catch (err) {
                 if (statusDiv) {
                     statusDiv.className = 'discord-status-msg error';
                     statusDiv.textContent = `❌ 전송 실패: ${err.message}`;
                 }
+                Archive.render(); // 상태 복구
             } finally {
-                sendBtn.disabled = Archive.getAll().length === 0;
-                sendBtn.textContent = '📨 디스코드로 전송하기';
-                // 5초 후 상태 메시지 자동 숨김
+                // 6초 후 상태 메시지 자동 숨김
                 setTimeout(() => {
                     if (statusDiv) statusDiv.classList.add('hidden');
                 }, 6000);
