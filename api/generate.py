@@ -11,9 +11,9 @@ class handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         # 1. API Key Check
-        api_key = os.environ.get("AI_API_KEY")
+        api_key = os.environ.get("AI_API_KEY") or os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY")
         if not api_key:
-            self.send_error_response(500, "서버 설정 오류: AI_API_KEY가 설정되지 않았습니다.")
+            self.send_error_response(500, "서버 설정 오류: Vercel 환경 변수(AI_API_KEY 또는 GEMINI_API_KEY)가 설정되지 않았습니다.")
             return
 
         # 2. Parse Request Body
