@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paradox Mind | 뻔한 위로는 거부한다</title>
+    <!-- B급 레트로 감성을 위한 둥근모꼴 폰트 -->
+    <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="kitsch-header">
+        <div class="logo-container">
+            <h1 class="rainbow-text">🧘‍♂️ 대충 만든 명언 제조기</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#hero">대문</a></li>
+                <li><a href="#generator">명언 뽑기</a></li>
+                <li><a href="#gallery">아무말 대잔치</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="comic-box">
+            <h2 class="wavy-text">"뻔한 위로? 개나 줘버려!"</h2>
+            <p>당신의 멘탈을 털어서 깨끗하게 세탁해 드립니다 🧼</p>
+            <div class="emoji-dance">
+                <span>🙃</span><span>💸</span><span>🔥</span><span>🫠</span>
+            </div>
+            <a href="#generator" class="retro-btn mt-20">팩트폭행 당하러 가기 👉</a>
+        </section>
+
+        <!-- AI 명언기 폼 섹션 -->
+        <section id="generator" class="comic-box bg-mint">
+            <h2>무슨 고민이길래 표정이 구려요? 🤨</h2>
+            <form id="worry-form">
+                <div class="form-group">
+                    <label for="category">고민의 늪 (카테고리)</label>
+                    <select id="category" name="category" required class="retro-input">
+                        <option value="">-- 고르쇼 --</option>
+                        <option value="study">머리에 안 들어오는 공부 📚</option>
+                        <option value="work">퇴사 마려운 직장생활 🏢</option>
+                        <option value="money">통장 아니고 텅장 💸</option>
+                        <option value="life">그냥 다 귀찮은 인생 🛌</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="worry-text">구구절절 하소연하기</label>
+                    <textarea id="worry-text" name="worry-text" rows="4" placeholder="예: 오늘 할 일을 내일로 자꾸 미루게 됩니다..." required class="retro-input"></textarea>
+                </div>
+                
+                <button type="submit" class="retro-btn shake-on-hover">팩트 폭행 당하기 🥊</button>
+            </form>
+
+            <!-- 결과 표시 영역 -->
+            <div id="result-area" class="hidden retro-card">
+                <div id="loading" class="hidden">
+                    <div class="spinner">🌀</div>
+                    <p class="blink-text">AI가 뇌를 굴리는 중...</p>
+                </div>
+                <div id="quote-result" class="hidden">
+                    <h3>🎉 역발상 처방전 도착!</h3>
+                    <p id="quote-text" class="quote-text"></p>
+                    <button id="reset-btn" class="retro-btn small-btn mt-20">다시 맞기 🔄</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 갤러리 섹션 -->
+        <section id="gallery" class="comic-box bg-pink">
+            <h2>마인드 컨트롤 갤러리 🖼️</h2>
+            <p>남의 불행은 나의 행복, 남의 팩폭은 나의 교훈</p>
+            <div class="gallery-grid">
+                <div class="gallery-item retro-card">
+                    <div class="q">Q: 돈이 없어요.</div>
+                    <div class="a">A: 걱정마세요, 내일도 없을 테니까요! 어차피 안 생기니 마음을 비우세요. 🧘‍♂️</div>
+                </div>
+                <div class="gallery-item retro-card">
+                    <div class="q">Q: 살이 자꾸 쪄요.</div>
+                    <div class="a">A: 축하합니다! 지구의 중력을 더 많이 받을 수 있는 특별한 존재가 되셨군요. 🌍</div>
+                </div>
+                <div class="gallery-item retro-card">
+                    <div class="q">Q: 출근하기 싫어요.</div>
+                    <div class="a">A: 회사도 당신이 오길 썩 기다리지 않을지도 모릅니다. 무승부네요! 🤝</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>ⓒ 2026 Paradox Mind. 뻔한 위로 반대 위원회.</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/api.js"></script>
+</body>
+</html>
