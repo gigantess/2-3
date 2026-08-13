@@ -81,7 +81,7 @@ class handler(BaseHTTPRequestHandler):
         
         if is_gemini:
             key_to_use = gemini_key or ai_key
-            gemini_models = ['Gemini 2.5 Flash-Lite']
+            gemini_models = ['gemini-2.5-flash', 'gemini-2.5-flash-lite']
             last_error = None
             
             for model in gemini_models:
