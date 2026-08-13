@@ -7,7 +7,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', 'application/json; charset=utf-8')
         self.end_headers()
-        self.wfile.write(json.dumps({"message": "이 API는 POST 요청만 지원합니다."}).encode('utf-8'))
+        self.wfile.write(json.dumps({"message": "이 API는 POST 요청만 지원합니다."}, ensure_ascii=False).encode('utf-8'))
 
     def do_POST(self):
         # 1. API Key Check
@@ -62,7 +62,7 @@ class handler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             response_data = {"quote": quote}
-            self.wfile.write(json.dumps(response_data).encode('utf-8'))
+            self.wfile.write(json.dumps(response_data, ensure_ascii=False).encode('utf-8'))
             
         except Exception as e:
             print(f"Error calling OpenAI API: {str(e)}")
@@ -72,4 +72,4 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(status_code)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
-        self.wfile.write(json.dumps({"error": message}).encode('utf-8'))
+        self.wfile.write(json.dumps({"error": message}, ensure_ascii=False).encode('utf-8'))
