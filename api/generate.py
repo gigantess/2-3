@@ -3,6 +3,12 @@ import json
 from http.server import BaseHTTPRequestHandler
 
 class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json; charset=utf-8')
+        self.end_headers()
+        self.wfile.write(json.dumps({"message": "이 API는 POST 요청만 지원합니다."}).encode('utf-8'))
+
     def do_POST(self):
         # 1. API Key Check
         api_key = os.environ.get("AI_API_KEY")
