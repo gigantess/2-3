@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 // 백엔드 API 호출 (Vercel Serverless)
-                const response = await fetch('/api/index', {
+                const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ category, text }),
