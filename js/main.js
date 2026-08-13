@@ -24,10 +24,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. 폼 제출 이벤트 핸들링은 api.js에서 전담합니다.
 
     // 3. 리셋 버튼 (다시하기)
+    const resetBtn = document.getElementById('reset-btn');
+    const worryForm = document.getElementById('worry-form');
+    const resultArea = document.getElementById('result-area');
+
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            worryForm.reset();
-            resultArea.classList.add('hidden');
+            if (worryForm) worryForm.reset();
+            if (resultArea) resultArea.classList.add('hidden');
             
             // 폼으로 다시 스크롤
             const generatorSection = document.getElementById('generator');
