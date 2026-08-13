@@ -10,7 +10,7 @@
 | :--- | :--- |
 | **프론트엔드** | **순수 Vanilla HTML5, CSS3, JavaScript** (React, Vue 등 프레임워크 사용 금지) |
 | **백엔드** | **Vercel Serverless Functions (Python 3.10+)** (`api/` 폴더 내 위치) |
-| **AI API 연동** | Python 백엔드를 통한 AI API(OpenAI/Claude 등) 호출 및 결과 전달 |
+| **AI API 연동** | Python 백엔드를 통한 Gemini AI API 호출 및 결과 전달 |
 | **화면 구성** | 최소 3개 이상의 페이지/섹션, 네비게이션 이동, 반응형 UI (Mobile/Desktop) |
 | **AI 기능 UX** | 사용자 입력 → 로딩 UI → AI 결과 출력 및 **3가지 예외 처리 필수 구현** |
 | **보안 요구사항** | API Key는 **환경 변수(`os.environ`)**로만 관리 (`.env` 파일 Git 추적 금지) |
@@ -85,7 +85,7 @@ project-root/
 
 1. **`requirements.txt` 작성**
    ```text
-   openai>=1.0.0
+   # 파이썬 표준 라이브러리 사용 (외부 패키지 없음)
    ```
 
 2. **`api/generate.py` 작성 (Vercel Serverless Function)**

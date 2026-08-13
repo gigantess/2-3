@@ -32,13 +32,10 @@ class handler(BaseHTTPRequestHandler):
         load_env_file()
 
         # 1. API Key Check
-        gemini_key = os.environ.get("GEMINI_API_KEY")
-        openai_key = os.environ.get("OPENAI_API_KEY")
-        ai_key = os.environ.get("AI_API_KEY")
+        gemini_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("AI_API_KEY")
 
-        api_key = gemini_key or openai_key or ai_key
-        if not api_key:
-            self.send_error_response(500, "서버 설정 오류: Vercel 환경 변수(GEMINI_API_KEY 또는 OPENAI_API_KEY)가 설정되지 않았습니다.")
+        if not gemini_key:
+            self.send_error_response(500, "서버 설정 오류: Vercel 환경 변수(GEMINI_API_KEY)가 설정되지 않았습니다.")
             return
 
         # 2. Parse Request Body
@@ -76,74 +73,46 @@ class handler(BaseHTTPRequestHandler):
 
         user_prompt = f"카테고리: {category}\n고민 내용: {text}"
 
-        # 3. Call LLM API (Gemini vs OpenAI)
+        # 3. Call LLM API (Gemini)
         quote = None
+        gemini_models = ['gemini-3.1-flash-lite', 'gemini-3.5-flash-lite']
+        last_error = None
         
-        # Gemini API 키가 있거나 OpenAI 키가 명시되지 않은 경우 Gemini 우선 처리
-        is_gemini = bool(gemini_key) or (ai_key and not ai_key.startswith("sk-") and not openai_key)
-        
-        if is_gemini:
-            key_to_use = gemini_key or ai_key
-            gemini_models = ['gemini-3.1-flash-lite', 'gemini-3.5-flash-lite']
-            last_error = None
-            
-            for model in gemini_models:
-                try:
-                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key_to_use}"
-                    payload = {
-                        "system_instruction": {
-                            "parts": [{"text": system_prompt}]
-                        },
-                        "contents": [
-                            {"parts": [{"text": user_prompt}]}
-                        ],
-                        "generationConfig": {
-                            "temperature": 0.7,
-                            "maxOutputTokens": 120
-                        }
-                    }
-                    data = json.dumps(payload).encode('utf-8')
-                    req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
-                    
-                    with urllib.request.urlopen(req, timeout=4) as res:
-                        result = json.loads(res.read().decode('utf-8'))
-                        quote = result['candidates'][0]['content']['parts'][0]['text'].strip()
-                        if quote:
-                            break
-                except urllib.error.HTTPError as e:
-                    err_body = e.read().decode('utf-8', errors='ignore')
-                    print(f"Gemini API Error ({model}): HTTP {e.code} - {err_body}")
-                    last_error = f"HTTP {e.code}: {err_body}"
-                except Exception as e:
-                    print(f"Error calling Gemini API ({model}): {str(e)}")
-                    last_error = str(e)
-            
-            if not quote and not openai_key:
-                print(f"All Gemini models failed. Last error: {last_error}")
-                self.send_error_response(500, "현재 우주적 기운이 맞지 않아 명언 제조기가 고장났습니다. 나중에 다시 시도해주세요.")
-                return
-
-        # Gemini 실패 후 OpenAI 키가 있거나 처음부터 OpenAI 키를 사용하는 경우
-        if not quote:
-            key_to_use = openai_key or ai_key
+        for model in gemini_models:
             try:
-                from openai import OpenAI
-                client = OpenAI(api_key=key_to_use)
-                
-                response = client.chat.completions.create(
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt}
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={gemini_key}"
+                payload = {
+                    "system_instruction": {
+                        "parts": [{"text": system_prompt}]
+                    },
+                    "contents": [
+                        {"parts": [{"text": user_prompt}]}
                     ],
-                    temperature=0.8,
-                    max_tokens=150
-                )
-                quote = response.choices[0].message.content.strip()
+                    "generationConfig": {
+                        "temperature": 0.7,
+                        "maxOutputTokens": 120
+                    }
+                }
+                data = json.dumps(payload).encode('utf-8')
+                req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
+                
+                with urllib.request.urlopen(req, timeout=4) as res:
+                    result = json.loads(res.read().decode('utf-8'))
+                    quote = result['candidates'][0]['content']['parts'][0]['text'].strip()
+                    if quote:
+                        break
+            except urllib.error.HTTPError as e:
+                err_body = e.read().decode('utf-8', errors='ignore')
+                print(f"Gemini API Error ({model}): HTTP {e.code} - {err_body}")
+                last_error = f"HTTP {e.code}: {err_body}"
             except Exception as e:
-                print(f"Error calling OpenAI API: {str(e)}")
-                self.send_error_response(500, "현재 우주적 기운이 맞지 않아 명언 제조기가 고장났습니다. 나중에 다시 시도해주세요.")
-                return
+                print(f"Error calling Gemini API ({model}): {str(e)}")
+                last_error = str(e)
+        
+        if not quote:
+            print(f"All Gemini models failed. Last error: {last_error}")
+            self.send_error_response(500, "현재 우주적 기운이 맞지 않아 명언 제조기가 고장났습니다. 나중에 다시 시도해주세요.")
+            return
 
         # 4. Send Success Response
         self.send_response(200)

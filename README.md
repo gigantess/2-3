@@ -33,7 +33,7 @@
 | **Frontend Style** | `CSS3` | Custom B급 레트로/키치 테마 CSS 작성, 반응형 미디어 쿼리(320px/768px/1024px+), 다크/라이트 테마 CSS 변수 관리 |
 | **Frontend Logic** | `JavaScript (ES6+)` | DOM 동적 렌더링, 사용자 이벤트 핸들링, `fetch()` 비동기 API 통신, `LocalStorage` 기반 처방전 상태 관리 |
 | **Backend Functions** | `Python 3.9` | Vercel Serverless Functions (`/api/generate.py`, `/api/discord.py`) 엔드포인트 구현, AI API 연동 및 데이터 검증 |
-| **AI Integration** | `Gemini / OpenAI API` | 팩트폭행 페르소나 및 80자 제한 역발상 프롬프트 엔지니어링 수행 |
+| **AI Integration** | `Gemini API` | 팩트폭행 페르소나 및 80자 제한 역발상 프롬프트 엔지니어링 수행 |
 | **Infrastructure** | `Vercel` | GitHub 연동 CI/CD 자동화 배포, Serverless Functions 파이프라인 |
 
 ---
@@ -129,7 +129,7 @@
 
 ## ⚡ 6. 지연(Latency) 완화 및 성능 개선 방안
 
-1. **고속 경량 모델 채택**: 응답 속도가 빠른 `gemini-1.5-flash` 모델을 기본 AI 엔진으로 선정하여 생성 지연 시간 최소화.
+1. **고속 경량 모델 채택**: 응답 속도가 빠른 `gemini-3.1-flash-lite` 및 `gemini-3.5-flash-lite` 모델을 적용하여 생성 지연 시간 및 비용 최소화.
 2. **프롬프트 최적화**: 토큰 소비를 줄이고 지연을 감소시키기 위해 80자 이내 출력 제약 조건 적용.
 3. **클라이언트 타임아웃 & AbortController**: `fetch` 요청 시 15초 타임아웃을 설정하여 무한 대기 현상 방지 및 사용자 안내.
 4. **로컬 캐싱**: 생성된 명언을 `LocalStorage`에 저장하여 재방문 시 무분별한 백엔드 API 재호출 방지.

@@ -77,7 +77,7 @@ API 오류(4xx/5xx)
 지연/타임아웃(응답이 늦을 때)
 AI API 연동 (백엔드: Vercel Serverless Functions - Python)
 api/에 Python 함수(엔드포인트)를 구현한다.
-AI API(OpenAI, Claude 등) 호출 후 결과를 반환한다.
+AI API(Gemini API) 호출 후 결과를 반환한다.
 필요한 패키지를 requirements.txt에 정의한다.
 프론트에서 fetch('/api/...')로 호출하고 응답을 처리한다.
 배포 및 동작 검증 (Vercel)
