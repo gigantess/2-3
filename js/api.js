@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // [예외 2: 타임아웃 10초 설정]
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
 
             try {
                 // 백엔드 API 호출 (Vercel Serverless)
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 quoteResult.classList.remove('hidden');
                 
                 if (error.name === 'AbortError') {
-                    quoteText.innerHTML = "AI가 너무 깊은 깨달음을 얻고 있나 봅니다. 잠시 후 다시 시도해주세요. (요청 시간 10초 초과)";
+                    quoteText.innerHTML = "AI가 너무 깊은 깨달음을 얻고 있나 봅니다. 잠시 후 다시 시도해주세요. (요청 시간 15초 초과)";
                 } else {
                     quoteText.innerHTML = "현재 우주적 기운이 맞지 않아 명언 제조기가 고장났습니다. 나중에 다시 시도해주세요. (API 연동 오류)";
                 }

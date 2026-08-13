@@ -81,7 +81,7 @@ class handler(BaseHTTPRequestHandler):
         
         if is_gemini:
             key_to_use = gemini_key or ai_key
-            gemini_models = ['gemini-3.6-flash', 'gemini-flash-latest', 'gemini-3.5-flash', 'gemini-2.5-flash-lite']
+            gemini_models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash']
             last_error = None
             
             for model in gemini_models:
@@ -102,7 +102,7 @@ class handler(BaseHTTPRequestHandler):
                     data = json.dumps(payload).encode('utf-8')
                     req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
                     
-                    with urllib.request.urlopen(req, timeout=9) as res:
+                    with urllib.request.urlopen(req, timeout=3) as res:
                         result = json.loads(res.read().decode('utf-8'))
                         quote = result['candidates'][0]['content']['parts'][0]['text'].strip()
                         if quote:
