@@ -1,2 +1,9 @@
+[project]
+name = "vercel-app"
+version = "0.1.0"
+dependencies = [
+    "openai>=1.0.0"
+]
+
 [tool.vercel]
 entrypoint = "api.generate:handler"
