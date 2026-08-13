@@ -127,7 +127,10 @@ class handler(BaseHTTPRequestHandler):
             req = urllib.request.Request(
                 webhook_url,
                 data=data,
-                headers={'Content-Type': 'application/json; charset=utf-8'}
+                headers={
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                }
             )
             # Discord webhook은 성공 시 204 No Content 반환
             with urllib.request.urlopen(req, timeout=10) as res:
