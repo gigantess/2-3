@@ -61,8 +61,15 @@ const Archive = {
         const count = items.length;
         if (countEl)  countEl.textContent  = count;
         if (badgeEl) {
+            const prev = parseInt(badgeEl.textContent || '0', 10);
             badgeEl.textContent = count;
             badgeEl.dataset.count = count;
+            // 숫자가 증가할 때만 펄스 애니메이션
+            if (count > prev) {
+                badgeEl.classList.remove('badge-pulse');
+                void badgeEl.offsetWidth; // reflow로 애니메이션 재시작
+                badgeEl.classList.add('badge-pulse');
+            }
         }
 
         // 빈 상태 / 있는 상태 토글
@@ -188,6 +195,66 @@ function initDiscordSend() {
 }
 
 // ===================================================
+// 보너스 2: 다크 모드 토글
+// ===================================================
+const DM_KEY = 'paradox_mind_dark';
+
+function applyTheme(isDark) {
+    const html  = document.documentElement;
+    const btn   = document.getElementById('dark-mode-toggle');
+    const icon  = btn ? btn.querySelector('.dm-icon')  : null;
+    const label = btn ? btn.querySelector('.dm-label') : null;
+
+    html.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    if (icon)  icon.textContent  = isDark ? '☀️' : '🌙';
+    if (label) label.textContent = isDark ? '라이트' : '다크';
+}
+
+function initDarkMode() {
+    const saved = localStorage.getItem(DM_KEY);
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = saved !== null ? saved === 'true' : prefersDark;
+    applyTheme(isDark);
+
+    const btn = document.getElementById('dark-mode-toggle');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme') === 'dark';
+            const next = !current;
+            applyTheme(next);
+            localStorage.setItem(DM_KEY, String(next));
+        });
+    }
+
+    // OS 다크 모드 설정 변경 감지 (사용자가 수동 설정하지 않은 경우)
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (localStorage.getItem(DM_KEY) === null) {
+            applyTheme(e.matches);
+        }
+    });
+}
+
+// ===================================================
+// 보너스 2: 스크롤 리빈 (IntersectionObserver)
+// ===================================================
+function initScrollReveal() {
+    const targets = document.querySelectorAll('.comic-box');
+    targets.forEach(el => el.classList.add('reveal-hidden'));
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.remove('reveal-hidden');
+                entry.target.classList.add('reveal-visible');
+                observer.unobserve(entry.target); // 한 번만 트리거
+            }
+        });
+    }, { threshold: 0.08 });
+
+    targets.forEach(el => observer.observe(el));
+}
+
+// ===================================================
 // DOMContentLoaded 진입점
 // ===================================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -239,7 +306,13 @@ document.addEventListener('DOMContentLoaded', () => {
     Archive.render();
     initDiscordSend();
 
-    // 5. 마인드 컨트롤 갤러리 랜덤 출력 로직 (50개 B급 명언)
+    // 5. 다크 모드 초기화 (미리 저장된 설정 적용)
+    initDarkMode();
+
+    // 6. 스크롤 리빈 (IntersectionObserver)
+    initScrollReveal();
+
+    // 7. 마인드 컨트롤 갤러리 랜덤 출력 로직 (50개 B급 명언)
     const quotes = [
         { q: "돈이 없어요.", a: "걱정마세요, 내일도 없을 테니까요! 어차피 안 생기니 마음을 비우세요." },
         { q: "살이 자꾸 쪄요.", a: "축하합니다! 지구의 중력을 더 많이 받을 수 있는 특별한 존재가 되셨군요." },

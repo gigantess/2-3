@@ -8,13 +8,66 @@
 
 /* Base Styles (눈이 편안한 파스텔 톤 베이스) */
 :root {
-    --bg-color: #fdfbf7; /* 부드러운 크림색 배경 */
-    --text-color: #222222; /* 너무 대비되지 않는 다크 그레이 */
-    --accent-yellow: #fff3b0; /* 부드러운 노랑 */
-    --accent-mint: #d1f2eb; /* 파스텔 민트 */
-    --accent-pink: #fadbd8; /* 파스텔 핑크 */
+    --bg-color: #fdfbf7;       /* 부드러운 크림색 배경 */
+    --text-color: #222222;     /* 너무 대비되지 않는 다크 그레이 */
+    --accent-yellow: #fff3b0;  /* 부드러운 노랑 */
+    --accent-mint: #d1f2eb;    /* 파스텔 민트 */
+    --accent-pink: #fadbd8;    /* 파스텔 핑크 */
     --border-color: #222222;
+    --bg-archive: #fef9e7;
+    --dot-color: #d5d5d5;
+    --card-bg: #ffffff;
+    --input-bg: #ffffff;
+    --input-focus-bg: #ffffdd;
+    --retro-btn-bg: #fff3b0;
+    --retro-card-bg: #ffffff;
+    --quote-bg: #f1f8e9;
+    --archive-worry-bg: #f8f9fa;
+    --archive-worry-border: #aaaaaa;
+    --archive-quote-bg: #fff3cd;
+    --archive-quote-border: #ffc107;
+    --footer-color: inherit;
+    /* 전환 속도 */
+    --transition-speed: 0.35s;
 }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   다크 모드 변수 오버라이드 ([data-theme="dark"])
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #e8e8e8;
+    --accent-yellow: #3a3000;
+    --accent-mint: #0a2e1e;
+    --accent-pink: #2e1018;
+    --border-color: #888888;
+    --bg-archive: #2a2800;
+    --dot-color: #333333;
+    --card-bg: #252525;
+    --input-bg: #2e2e2e;
+    --input-focus-bg: #3a3600;
+    --retro-btn-bg: #3a3000;
+    --retro-card-bg: #2a2a2a;
+    --quote-bg: #1a2a10;
+    --archive-worry-bg: #1e1e1e;
+    --archive-worry-border: #555555;
+    --archive-quote-bg: #2a2800;
+    --archive-quote-border: #aa8800;
+    --footer-color: #888888;
+}
+
+/* 모든 요소에 배경색/색상 전환 효과 적용 */
+*, *::before, *::after {
+    transition:
+        background-color var(--transition-speed) ease,
+        color var(--transition-speed) ease,
+        border-color var(--transition-speed) ease,
+        box-shadow var(--transition-speed) ease;
+}
+/* 애니메이션 전환은 제외 (깜빡이는 요소 등) */
+.spinner, .rainbow-text, .emoji-dance span,
+.blink-text, .shake-on-hover { transition: none !important; }
+
 
 * {
     box-sizing: border-box;
@@ -25,8 +78,8 @@
 body {
     font-family: 'DungGeunMo', monospace, sans-serif;
     background-color: var(--bg-color);
-    background-image: radial-gradient(#d5d5d5 1px, transparent 1px);
-    background-size: 20px 20px; /* 공책 느낌의 도트 패턴 */
+    background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
+    background-size: 20px 20px; /* 공첵 느낙의 도트 패턴 */
     color: var(--text-color);
     line-height: 1.6;
     padding-bottom: 50px;
@@ -80,7 +133,7 @@ nav a {
 
 nav a:hover {
     border: 2px dashed var(--border-color);
-    background-color: white;
+    background-color: var(--card-bg);
 }
 
 /* 레이아웃 및 컨테이너 */
@@ -93,14 +146,17 @@ main {
     gap: 40px;
 }
 
-/* 공통 코믹 박스 스타일 (하드 섀도우) */
+/* 공통 코믵 박스 스타일 (하드 섬도우) */
 .comic-box {
-    background-color: white;
+    background-color: var(--card-bg);
     border: 4px solid var(--border-color);
     border-radius: 8px;
     padding: 30px;
-    box-shadow: 8px 8px 0px var(--border-color); /* 눈아프지 않은 레트로 섀도우 */
+    box-shadow: 8px 8px 0px var(--border-color); /* 눈아프지 않은 레트로 섬도우 */
     position: relative;
+    /* 스크롤 리빘 */
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .comic-box.bg-mint { background-color: var(--accent-mint); }
@@ -109,7 +165,7 @@ main {
 /* Hero 섹션 */
 #hero {
     text-align: center;
-    background-color: #fff;
+    background-color: var(--card-bg);
 }
 
 .wavy-text {
@@ -159,13 +215,14 @@ main {
     font-size: 1rem;
     border: 3px solid var(--border-color);
     border-radius: 4px;
-    background-color: #fff;
+    background-color: var(--input-bg);
+    color: var(--text-color);
     box-shadow: inset 2px 2px 0px rgba(0,0,0,0.1);
 }
 
 .retro-input:focus {
     outline: none;
-    background-color: #ffffdd;
+    background-color: var(--input-focus-bg);
 }
 
 /* 버튼 */
@@ -203,7 +260,7 @@ main {
 
 /* 결과 카드 영역 */
 .retro-card {
-    background-color: white;
+    background-color: var(--retro-card-bg);
     border: 3px dashed var(--border-color);
     padding: 20px;
     margin-top: 20px;
@@ -215,8 +272,9 @@ main {
     line-height: 1.8;
     margin: 15px 0;
     padding: 15px;
-    background-color: #f1f8e9;
+    background-color: var(--quote-bg);
     border: 2px solid var(--border-color);
+    color: var(--text-color);
 }
 
 .spinner {
@@ -389,7 +447,7 @@ footer {
 }
 
 .archive-item {
-    background-color: white;
+    background-color: var(--card-bg);
     border: 3px solid var(--border-color);
     border-radius: 6px;
     padding: 16px 20px;
@@ -398,6 +456,12 @@ footer {
     margin-top: 0;
     box-shadow: 4px 4px 0px var(--border-color);
     animation: slideIn 0.3s ease;
+    /* hover 마이크로 인터랙션 */
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+.archive-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 6px 10px 0px var(--border-color);
 }
 
 @keyframes slideIn {
@@ -430,11 +494,12 @@ footer {
 
 .archive-worry {
     font-size: 0.95rem;
-    color: #555;
+    color: var(--text-color);
+    opacity: 0.8;
     margin-bottom: 8px;
     padding: 8px;
-    background-color: #f8f9fa;
-    border-left: 4px solid #aaa;
+    background-color: var(--archive-worry-bg);
+    border-left: 4px solid var(--archive-worry-border);
 }
 
 .archive-quote {
@@ -442,8 +507,8 @@ footer {
     font-weight: bold;
     color: var(--text-color);
     padding: 10px;
-    background-color: #fff3cd;
-    border-left: 4px solid #ffc107;
+    background-color: var(--archive-quote-bg);
+    border-left: 4px solid var(--archive-quote-border);
     margin-bottom: 12px;
     line-height: 1.7;
 }
@@ -532,4 +597,130 @@ footer {
     background-color: #cce5ff;
     border-color: #004085;
     color: #004085;
+}
+
+/* ═══════════════════════════════════════════════════
+   보너스 2: 다크 모드 토글 버튼
+═══════════════════════════════════════════════════ */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dark-mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: bold;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 2px 2px 0px var(--border-color);
+    white-space: nowrap;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+.dark-mode-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 3px 4px 0px var(--border-color);
+}
+.dark-mode-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 var(--border-color);
+}
+
+/* 다크 모드일 때 아이콘 회전 */
+[data-theme="dark"] .dark-mode-btn .dm-icon {
+    display: inline-block;
+    animation: moonSpin 0.4s ease forwards;
+}
+@keyframes moonSpin {
+    from { transform: rotate(-30deg); opacity: 0; }
+    to   { transform: rotate(0deg);   opacity: 1; }
+}
+
+/* bg-archive 다크 모드 */
+.bg-archive {
+    background-color: var(--bg-archive);
+}
+
+/* 푸터 다크 모드 */
+footer {
+    color: var(--footer-color);
+}
+
+/* ═══════════════════════════════════════════════════
+   보너스 2: 스크롤 리빌 (IntersectionObserver 연동)
+═══════════════════════════════════════════════════ */
+.reveal-hidden {
+    opacity: 0;
+    transform: translateY(28px);
+    /* CSS 변수 transition보다 우선 — 별도 지정 */
+    transition: opacity 0.55s ease, transform 0.55s ease !important;
+}
+.reveal-visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   보너스 2: 강화된 마이크로 인터랙션
+═══════════════════════════════════════════════════ */
+
+/* 버튼 포커스 글로우 (키보드 접근성 + UX) */
+.retro-btn:focus-visible {
+    outline: 3px solid #4ecdc4;
+    outline-offset: 3px;
+}
+
+/* 버튼 hover 리프트 (shake 없는 일반 버튼) */
+.retro-btn:not(.shake-on-hover):hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0px var(--border-color);
+}
+
+/* 링크 버튼 hover 리프트 */
+a.retro-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0px var(--border-color);
+}
+
+/* 네비게이션 링크 hover 밑줄 스라이드 */
+nav a {
+    position: relative;
+}
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--border-color);
+    transition: width 0.2s ease, left 0.2s ease !important;
+}
+nav a:hover::after {
+    width: 100%;
+    left: 0;
+}
+
+/* 아카이브 배지 펄스 (숫자 변경 시 JS에서 클래스 추가) */
+@keyframes badgePulse {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+.badge-pulse {
+    animation: badgePulse 0.4s ease;
+}
+
+/* 다크 모드 + 모바일 추가 반응형 */
+@media (max-width: 480px) {
+    .dark-mode-btn .dm-label { display: none; }
+    .rainbow-text { font-size: 1.1rem; }
 }
