@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <header class="kitsch-header">
         <div class="logo-container">
@@ -52,12 +54,13 @@
                         <option value="life">그냥 다 귀찮은 인생 🛌</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="worry-text">구구절절 하소연하기</label>
-                    <textarea id="worry-text" name="worry-text" rows="4" placeholder="예: 오늘 할 일을 내일로 자꾸 미루게 됩니다..." required class="retro-input"></textarea>
+                    <textarea id="worry-text" name="worry-text" rows="4" placeholder="예: 오늘 할 일을 내일로 자꾸 미루게 됩니다..."
+                        required class="retro-input"></textarea>
                 </div>
-                
+
                 <button type="submit" class="retro-btn shake-on-hover">팩트 폭행 당하기 🥊</button>
             </form>
 
@@ -87,9 +90,9 @@
                 <!-- JS에서 새로고침 시 랜덤 명언이 렌더링됩니다 -->
             </div>
         </section>
-        <!-- 쳄방전 보관함 섹션 -->
+        <!-- 처방전 보관함 섹션 -->
         <section id="archive" class="comic-box bg-archive">
-            <h2>📚 쳄방전 보관함 <span class="archive-total-badge" id="archive-count">0</span></h2>
+            <h2>📚 처방전 보관함 <span class="archive-total-badge" id="archive-count">0</span></h2>
             <p>AI의 팩트폭행을 모아서 디스코드로 공유해보세요!</p>
 
             <div id="archive-empty" class="archive-empty-msg">
@@ -119,4 +122,5 @@
     <script src="js/main.js"></script>
     <script src="js/api.js"></script>
 </body>
+
 </html>
