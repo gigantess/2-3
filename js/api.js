@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // [정상 동작] DOM 렌더링
                 loadingUI.classList.add('hidden');
                 quoteResult.classList.remove('hidden');
-                quoteText.innerHTML = data.quote.replace(/\n/g, '<br>');
+                quoteText.innerHTML = data.quote.replaceAll('\n', '<br>');
 
                 // 저장 버튼 초기화 (새 처방전 생성 시 재활성화)
                 if (saveBtn) {

@@ -36,6 +36,8 @@ CATEGORY_COLORS = {
     'life':  0xbb8fce
 }
 
+JSON_CONTENT_TYPE = 'application/json; charset=utf-8'
+
 class handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         """Vercel 로그 노이즈 억제"""
@@ -134,10 +136,10 @@ class handler(BaseHTTPRequestHandler):
             )
             # Discord webhook은 성공 시 204 No Content 반환
             with urllib.request.urlopen(req, timeout=10) as res:
-                status = res.getcode()
+                res.read()
 
             self.send_response(200)
-            self.send_header('Content-type', 'application/json; charset=utf-8')
+            self.send_header('Content-type', JSON_CONTENT_TYPE)
             self.end_headers()
             resp = {"success": True, "sent": len(items)}
             self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
@@ -152,6 +154,6 @@ class handler(BaseHTTPRequestHandler):
 
     def send_error_response(self, status_code, message):
         self.send_response(status_code)
-        self.send_header('Content-type', 'application/json; charset=utf-8')
+        self.send_header('Content-type', JSON_CONTENT_TYPE)
         self.end_headers()
         self.wfile.write(json.dumps({"error": message}, ensure_ascii=False).encode('utf-8'))

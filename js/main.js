@@ -20,7 +20,7 @@ const Archive = {
             id: Date.now(),
             category,
             worry: worry.slice(0, 300),   // 너무 긴 내용 방지
-            quote: quote.replace(/<br>/g, '\n').replace(/<[^>]*>/g, ''), // HTML 태그 제거
+            quote: quote.replaceAll('<br>', '\n').replaceAll(/<[a-zA-Z/][^>]*>/g, ''), // HTML 태그 제거
             date: new Date().toLocaleString('ko-KR', {
                 year: 'numeric', month: '2-digit', day: '2-digit',
                 hour: '2-digit', minute: '2-digit'
@@ -77,13 +77,13 @@ const Archive = {
 
         if (countEl)  countEl.textContent  = count;
         if (badgeEl) {
-            const prev = parseInt(badgeEl.textContent || '0', 10);
+            const prev = Number.parseInt(badgeEl.textContent || '0', 10);
             badgeEl.textContent = count;
             badgeEl.dataset.count = count;
             // 숫자가 증가할 때만 펄스 애니메이션
             if (count > prev) {
                 badgeEl.classList.remove('badge-pulse');
-                void badgeEl.offsetWidth; // reflow로 애니메이션 재시작
+                badgeEl.getBoundingClientRect(); // reflow로 애니메이션 재시작
                 badgeEl.classList.add('badge-pulse');
             }
         }
@@ -140,7 +140,7 @@ const Archive = {
         // 개별 삭제 버튼 이벤트 바인딩
         list.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const id = parseInt(btn.dataset.id, 10);
+                const id = Number.parseInt(btn.dataset.id, 10);
                 if (confirm('이 처방전을 삭제할까요?')) {
                     Archive.delete(id);
                 }
@@ -152,11 +152,11 @@ const Archive = {
 /** XSS 방지용 HTML 이스케이프 */
 function escapeHtml(str) {
     return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/\n/g, '<br>');
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll('\n', '<br>');
 }
 
 /** window에 등록해 api.js에서 접근 가능하게 함 */
@@ -252,7 +252,7 @@ function applyTheme(isDark) {
     const icon  = btn ? btn.querySelector('.dm-icon')  : null;
     const label = btn ? btn.querySelector('.dm-label') : null;
 
-    html.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    html.dataset.theme = isDark ? 'dark' : 'light';
     if (icon)  icon.textContent  = isDark ? '☀️' : '🌙';
     if (label) label.textContent = isDark ? '라이트' : '다크';
 }
@@ -266,7 +266,7 @@ function initDarkMode() {
     const btn = document.getElementById('dark-mode-toggle');
     if (btn) {
         btn.addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme') === 'dark';
+            const current = document.documentElement.dataset.theme === 'dark';
             const next = !current;
             applyTheme(next);
             localStorage.setItem(DM_KEY, String(next));
@@ -415,7 +415,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const galleryContainer = document.getElementById('gallery-container');
     if (galleryContainer) {
-        const shuffled = quotes.sort(() => 0.5 - Math.random());
+        const shuffled = [...quotes];
+        const getRandomInt = (max) => {
+            const array = new Uint32Array(1);
+            window.crypto.getRandomValues(array);
+            return array[0] % max;
+        };
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = getRandomInt(i + 1);
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
         const selected = shuffled.slice(0, 3);
         
         selected.forEach(item => {
