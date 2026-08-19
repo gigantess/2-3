@@ -1,0 +1,8 @@
+[project]
+name = "paradox-mind"
+version = "0.1.0"
+description = "Paradox Mind - B급 명언 제조기"
+requires-python = ">=3.9"
+
+[tool.vercel]
+entrypoint = "api.generate:handler"
