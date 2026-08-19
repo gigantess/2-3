@@ -148,7 +148,7 @@ function escapeHtml(str) {
 }
 
 // ===================================================
-// 질문 & 위로글(명언) 공유 기능 (Web Share API + 클립보드 복사)
+// 질문 & 위로글(명언) 공유 기능 (모바일: Web Share API / PC: 클립보드 복사)
 // ===================================================
 async function sharePrescription(worry, quote) {
     const plainQuote = String(quote).replaceAll('<br>', '\n').replaceAll(/<[a-zA-Z/][^>]*>/g, '').trim();
@@ -157,22 +157,27 @@ async function sharePrescription(worry, quote) {
 
     const shareText = `[패러독스 마인드] 팩폭 처방전 💊\n\n😰 고민: "${plainWorry}"\n💬 처방: "${plainQuote}"\n\n👉 나도 팩폭 맞으러 가기:\n${shareUrl}`;
 
-    if (navigator.share) {
+    // 모바일 기기(Android, iOS, iPad 등) 여부 확인
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+        || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(navigator.userAgent));
+
+    // 1. 모바일 환경: OS 네이티브 공유창(카카오톡 앱 등) 우선 호출
+    if (isMobile && navigator.share) {
         try {
             await navigator.share({
                 title: '패러독스 마인드 팩폭 처방전 💊',
-                text: shareText,
-                url: shareUrl
+                text: shareText
             });
             return { type: 'native', success: true };
         } catch (err) {
             if (err.name === 'AbortError') {
                 return { type: 'abort', success: false };
             }
+            // 모바일에서 공유 실패 시 클립보드 복사로 폴백
         }
     }
 
-    // 클립보드 복사 폴백
+    // 2. PC(데스크톱) 환경 또는 Web Share 미지원 시: 전체 처방전 텍스트를 클립보드에 복사
     try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
             await navigator.clipboard.writeText(shareText);
@@ -189,7 +194,7 @@ async function sharePrescription(worry, quote) {
         return { type: 'clipboard', success: true };
     } catch (e) {
         prompt('아래 처방전 내용을 복사해서 카톡에 공유하세요:', shareText);
-        return { type: 'prompt', success: true };
+        return { type: 'clipboard', success: true };
     }
 }
 
