@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn  = worryForm ? worryForm.querySelector('button[type="submit"]') : null;
     const saveBtn    = document.getElementById('save-btn');
     const saveToast  = document.getElementById('save-toast');
+    const shareBtn   = document.getElementById('share-btn');
+    const shareToast = document.getElementById('share-toast');
 
     // 저장 버튼이 눌릴 때 사용할 현재 처방전 데이터 (클로저 변수)
     let _currentCategory = '';
@@ -25,6 +27,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (saveToast) {
                 saveToast.classList.remove('hidden');
                 setTimeout(() => saveToast.classList.add('hidden'), 3000);
+            }
+        });
+    }
+
+    // 공유하기 버튼 이벤트 (카카오톡/SNS/클립보드)
+    if (shareBtn) {
+        shareBtn.addEventListener('click', async () => {
+            if (!_currentQuote) return;
+            const res = await window.ParadoxMind.sharePrescription(_currentWorry, _currentQuote);
+            if (res && res.type === 'clipboard' && shareToast) {
+                shareToast.classList.remove('hidden');
+                setTimeout(() => shareToast.classList.add('hidden'), 3500);
             }
         });
     }
@@ -83,9 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 저장 버튼 초기화 (새 처방전 생성 시 재활성화)
                 if (saveBtn) {
                     saveBtn.disabled = false;
-                    saveBtn.textContent = '💾 처방전 저장';
+                    saveBtn.textContent = '💾 보관함 저장';
                 }
                 if (saveToast) saveToast.classList.add('hidden');
+                if (shareToast) shareToast.classList.add('hidden');
                 
             } catch (error) {
                 loadingUI.classList.add('hidden');

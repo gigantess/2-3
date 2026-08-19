@@ -24,26 +24,12 @@ const Archive = {
             date: new Date().toLocaleString('ko-KR', {
                 year: 'numeric', month: '2-digit', day: '2-digit',
                 hour: '2-digit', minute: '2-digit'
-            }),
-            sent: false                   // 디스코드 전송 여부 플래그
+            })
         };
         items.unshift(item);               // 최신 항목을 맨 앞에
         localStorage.setItem(ARCHIVE_KEY, JSON.stringify(items.slice(0, 50))); // 최대 50개
         this.render();
         return item;
-    },
-
-    /** 특정 ID 목록을 디스코드 전송 완료 상태로 변경 */
-    markAsSent(sentIds) {
-        const idSet = new Set(sentIds);
-        const items = this.getAll().map(item => {
-            if (idSet.has(item.id)) {
-                return { ...item, sent: true };
-            }
-            return item;
-        });
-        localStorage.setItem(ARCHIVE_KEY, JSON.stringify(items));
-        this.render();
     },
 
     /** 항목 개별 삭제 */
@@ -64,16 +50,15 @@ const Archive = {
         const items = this.getAll();
         const list       = document.getElementById('archive-list');
         const emptyMsg   = document.getElementById('archive-empty');
-        const sendBtn    = document.getElementById('send-discord-btn');
         const clearBtn   = document.getElementById('clear-archive-btn');
         const countEl    = document.getElementById('archive-count');
         const badgeEl    = document.getElementById('archive-count-badge');
+        const toastEl    = document.getElementById('archive-toast');
 
         if (!list) return;
 
-        // 카운트 및 미전송 개수 계산
+        // 카운트 계산
         const count = items.length;
-        const unsentCount = items.filter(i => !i.sent).length;
 
         if (countEl)  countEl.textContent  = count;
         if (badgeEl) {
@@ -93,19 +78,6 @@ const Archive = {
         if (emptyMsg) emptyMsg.classList.toggle('hidden', !isEmpty);
         if (clearBtn) clearBtn.disabled = isEmpty;
 
-        if (sendBtn) {
-            if (isEmpty) {
-                sendBtn.disabled = true;
-                sendBtn.textContent = '📨 디스코드로 전송하기';
-            } else if (unsentCount === 0) {
-                sendBtn.disabled = true;
-                sendBtn.textContent = '✅ 디스코드 전송 완료';
-            } else {
-                sendBtn.disabled = false;
-                sendBtn.textContent = `📨 디스코드로 전송하기 (${unsentCount}개 새 처방전)`;
-            }
-        }
-
         if (isEmpty) {
             list.innerHTML = '';
             return;
@@ -122,23 +94,36 @@ const Archive = {
         };
 
         list.innerHTML = items.map(item => `
-            <div class="archive-item ${item.sent ? 'is-sent' : ''}" data-id="${item.id}">
+            <div class="archive-item" data-id="${item.id}">
                 <div class="archive-header">
                     <div class="archive-badge-group">
                         <span class="archive-category">${CATEGORY_LABELS[item.category] || '기타'}</span>
-                        <span class="archive-sent-tag ${item.sent ? 'sent' : 'unsent'}">
-                            ${item.sent ? '✅ 전송됨' : '🆕 미발송'}
-                        </span>
                     </div>
                     <span class="archive-date">${item.date}</span>
                 </div>
                 <div class="archive-worry">😰 ${escapeHtml(item.worry)}</div>
                 <div class="archive-quote">💊 ${escapeHtml(item.quote)}</div>
                 <div class="archive-item-footer">
+                    <button class="retro-btn small-btn share-item-btn" data-id="${item.id}">📤 카톡/공유</button>
                     <button class="retro-btn small-btn danger-btn delete-btn" data-id="${item.id}">🗑️ 삭제</button>
                 </div>
             </div>
         `).join('');
+
+        // 개별 공유 버튼 이벤트 바인딩
+        list.querySelectorAll('.share-item-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = Number.parseInt(btn.dataset.id, 10);
+                const target = items.find(i => i.id === id);
+                if (target) {
+                    const res = await sharePrescription(target.worry, target.quote);
+                    if (res && res.type === 'clipboard' && toastEl) {
+                        toastEl.classList.remove('hidden');
+                        setTimeout(() => toastEl.classList.add('hidden'), 3500);
+                    }
+                }
+            });
+        });
 
         // 개별 삭제 버튼 이벤트 바인딩
         list.querySelectorAll('.delete-btn').forEach(btn => {
@@ -162,83 +147,65 @@ function escapeHtml(str) {
         .replaceAll('\n', '<br>');
 }
 
-/** window에 등록해 api.js에서 접근 가능하게 함 */
-window.ParadoxMind = { Archive };
-
 // ===================================================
-// 디스코드 전송 핸들러
+// 질문 & 위로글(명언) 공유 기능 (Web Share API + 클립보드 복사)
 // ===================================================
-function initDiscordSend() {
-    const sendBtn      = document.getElementById('send-discord-btn');
-    const clearBtn     = document.getElementById('clear-archive-btn');
-    const statusDiv    = document.getElementById('discord-status');
+async function sharePrescription(worry, quote) {
+    const plainQuote = String(quote).replaceAll('<br>', '\n').replaceAll(/<[a-zA-Z/][^>]*>/g, '').trim();
+    const plainWorry = String(worry).trim();
+    const shareUrl = window.location.href.split('#')[0];
 
-    if (sendBtn) {
-        sendBtn.addEventListener('click', async () => {
-            const allItems = Archive.getAll();
-            const unsentItems = allItems.filter(item => !item.sent);
+    const shareText = `[패러독스 마인드] 팩폭 처방전 💊\n\n😰 고민: "${plainWorry}"\n💬 처방: "${plainQuote}"\n\n👉 나도 팩폭 맞으러 가기:\n${shareUrl}`;
 
-            if (unsentItems.length === 0) {
-                if (statusDiv) {
-                    statusDiv.className = 'discord-status-msg success';
-                    statusDiv.textContent = 'ℹ️ 이미 모든 처방전이 디스코드로 전송되었습니다. 새로운 처방전을 저장해 보세요!';
-                    statusDiv.classList.remove('hidden');
-                    setTimeout(() => { if (statusDiv) statusDiv.classList.add('hidden'); }, 4000);
-                }
-                return;
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: '패러독스 마인드 팩폭 처방전 💊',
+                text: shareText,
+                url: shareUrl
+            });
+            return { type: 'native', success: true };
+        } catch (err) {
+            if (err.name === 'AbortError') {
+                return { type: 'abort', success: false };
             }
-
-            const targetItems = unsentItems.slice(0, 10);
-
-            // 전송 중 UI
-            sendBtn.disabled = true;
-            sendBtn.textContent = '📡 전송 중...';
-            if (statusDiv) {
-                statusDiv.className = 'discord-status-msg sending';
-                statusDiv.textContent = `🔄 ${targetItems.length}개의 새로운 처방전을 디스코드로 보내고 있습니다...`;
-                statusDiv.classList.remove('hidden');
-            }
-
-            try {
-                const res = await fetch('/api/discord', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ items: targetItems }) // 미전송 항목만
-                });
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    throw new Error(data.error || `HTTP ${res.status}`);
-                }
-
-                // 성공 시 전송된 처방전들을 sent=true로 업데이트
-                Archive.markAsSent(targetItems.map(i => i.id));
-
-                if (statusDiv) {
-                    statusDiv.className = 'discord-status-msg success';
-                    statusDiv.textContent = `✅ ${data.sent}개의 새로운 처방전을 디스코드로 전송했습니다! 채널을 확인해보세요 🎉`;
-                }
-            } catch (err) {
-                if (statusDiv) {
-                    statusDiv.className = 'discord-status-msg error';
-                    statusDiv.textContent = `❌ 전송 실패: ${err.message}`;
-                }
-                Archive.render(); // 상태 복구
-            } finally {
-                // 6초 후 상태 메시지 자동 숨김
-                setTimeout(() => {
-                    if (statusDiv) statusDiv.classList.add('hidden');
-                }, 6000);
-            }
-        });
+        }
     }
+
+    // 클립보드 복사 폴백
+    try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(shareText);
+        } else {
+            const ta = document.createElement('textarea');
+            ta.value = shareText;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        }
+        return { type: 'clipboard', success: true };
+    } catch (e) {
+        prompt('아래 처방전 내용을 복사해서 카톡에 공유하세요:', shareText);
+        return { type: 'prompt', success: true };
+    }
+}
+
+/** window에 등록해 api.js 등 외부에서 접근 가능하게 함 */
+window.ParadoxMind = { Archive, sharePrescription };
+
+// ===================================================
+// 보관함 전체 삭제 핸들러
+// ===================================================
+function initArchiveActions() {
+    const clearBtn = document.getElementById('clear-archive-btn');
 
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
             if (confirm('저장된 처방전을 모두 삭제할까요? 이 작업은 되돌릴 수 없습니다.')) {
                 Archive.clear();
-                if (statusDiv) statusDiv.classList.add('hidden');
             }
         });
     }
@@ -352,9 +319,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4. 보관함 초기 렌더링 + 디스코드 버튼 초기화
+    // 4. 보관함 초기 렌더링 + 액션 핸들러 초기화
     Archive.render();
-    initDiscordSend();
+    initArchiveActions();
 
     // 5. 다크 모드 초기화 (미리 저장된 설정 적용)
     initDarkMode();

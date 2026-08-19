@@ -542,9 +542,63 @@ footer {
     line-height: 1.7;
 }
 
+.result-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
 .archive-item-footer {
     display: flex;
     justify-content: flex-end;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* 공유하기 버튼 (카카오톡 감성 옐로우) */
+.share-btn, .share-item-btn {
+    background-color: #fee500;
+    color: #191919;
+    border-color: var(--border-color);
+}
+.share-btn:hover:not(:disabled), .share-item-btn:hover:not(:disabled) {
+    background-color: #fada0a;
+}
+
+/* 저장 버튼 */
+.save-btn {
+    background-color: #4ecdc4;
+    color: #191919;
+}
+.save-btn:hover:not(:disabled) {
+    background-color: #3dbdb4;
+}
+
+/* 토스트 알림 메시지 */
+.save-toast, .share-toast {
+    margin-top: 15px;
+    padding: 10px 14px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.15);
+    animation: fadeInDown 0.3s ease;
+    text-align: center;
+}
+
+.save-toast {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #28a745;
+}
+
+.share-toast {
+    background-color: #fff3cd;
+    color: #856404;
+    border-color: #e0a800;
 }
 
 /* ===== 하단 액션 버튼 영역 ===== */
@@ -553,29 +607,6 @@ footer {
     gap: 12px;
     margin-top: 10px;
     flex-wrap: wrap;
-}
-
-/* 디스코드 전송 버튼 */
-.discord-btn {
-    background-color: #4752c4;
-    color: #ffffff;
-    border-color: #3b488b;
-    box-shadow: 4px 4px 0px #3b488b;
-}
-.discord-btn:hover:not(:disabled) {
-    background-color: #3b488b;
-}
-.discord-btn:active:not(:disabled) {
-    transform: translate(4px, 4px);
-    box-shadow: 0px 0px 0px #3b488b;
-}
-.discord-btn:disabled {
-    background-color: #b2bfef;
-    color: #333333;
-    border-color: #aaa;
-    box-shadow: 4px 4px 0px #aaa;
-    cursor: not-allowed;
-    opacity: 0.7;
 }
 
 /* 위험(삭제) 버튼 */
@@ -598,35 +629,10 @@ footer {
     cursor: not-allowed;
 }
 
-/* small 삭제 버튼 */
+/* small 버튼 */
 .small-btn {
     font-size: 0.9rem;
     padding: 6px 14px;
-}
-
-/* 디스코드 전송 결과 메시지 */
-.discord-status-msg {
-    margin-top: 16px;
-    padding: 12px 16px;
-    border-radius: 6px;
-    font-size: 1rem;
-    border: 2px solid;
-    animation: fadeInDown 0.3s ease;
-}
-.discord-status-msg.success {
-    background-color: #d4edda;
-    border-color: #28a745;
-    color: #155724;
-}
-.discord-status-msg.error {
-    background-color: #f8d7da;
-    border-color: #dc3545;
-    color: #721c24;
-}
-.discord-status-msg.sending {
-    background-color: #cce5ff;
-    border-color: #004085;
-    color: #004085;
 }
 
 /* ═══════════════════════════════════════════════════
