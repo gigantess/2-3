@@ -109,7 +109,17 @@ class handler(BaseHTTPRequestHandler):
 * 3문장 이상의 장황한 설명
 """
 
-        user_prompt = f"카테고리: {category}\n고민 내용: {text}"
+        category_map = {
+            'study': '공부/시험',
+            'work': '직장/취업/퇴사',
+            'money': '돈/재테크/텅장',
+            'love': '연애/짝사랑/이별',
+            'relationship': '인간관계/친구/가족',
+            'health': '다이어트/건강/운동',
+            'life': '인생/게으름/일상'
+        }
+        category_name = category_map.get(category, category)
+        user_prompt = f"카테고리: {category_name}\n고민 내용: {text}"
 
         # 3. Call LLM API (Gemini)
         quote = None

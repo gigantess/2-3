@@ -25,6 +25,9 @@ CATEGORY_LABELS = {
     'study': '📚 머리에 안 들어오는 공부',
     'work':  '🏢 퇴사 마려운 직장생활',
     'money': '💸 통장 아니고 텅장',
+    'love':  '💔 답도 없는 연애·짝사랑',
+    'relationship': '👥 기 빨리는 인간관계',
+    'health': '🥗 작심삼일 다이어트·운동',
     'life':  '🛌 그냥 다 귀찮은 인생'
 }
 
@@ -33,6 +36,9 @@ CATEGORY_COLORS = {
     'study': 0x4ecdc4,
     'work':  0xff6b6b,
     'money': 0xf7dc6f,
+    'love':  0xff78cb,
+    'relationship': 0x54a0ff,
+    'health': 0x2ecc71,
     'life':  0xbb8fce
 }
 

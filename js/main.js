@@ -115,6 +115,9 @@ const Archive = {
             study: '📚 공부',
             work:  '🏢 직장생활',
             money: '💸 텅장',
+            love:  '💔 연애/짝사랑',
+            relationship: '👥 인간관계',
+            health: '🥗 다이어트/건강',
             life:  '🛌 귀찮은 인생'
         };
 
